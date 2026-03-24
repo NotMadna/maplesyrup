@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nox Aeterna - Astral Protocol</title>
+    <!-- Tailwind CSS untuk Styling Cepat -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cinzel untuk kesan elegan/fantasi -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090e17; /* Warna dasar malam Genshin */
+            color: #ece5d8;
+            overflow-x: hidden;
+        }
+        .font-serif {
+            font-family: 'Cinzel', serif;
+        }
+        /* Animasi Bintang */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle infinite ease-in-out;
+        }
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 10s linear infinite;
+        }
+        /* Style untuk Tab Aktif */
+        .tab-active {
+            color: #39445c;
+            background-color: #e6c981;
+            box-shadow: 0 0 15px rgba(230,201,129,0.4);
+        }
+        .tab-inactive {
+            color: #ece5d8;
+        }
+        .tab-inactive:hover {
+            background-color: #1c2233;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+
+    <!-- Efek Latar Belakang Malam Bintang -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div class="absolute top-[10%] left-[20%] w-96 h-96 bg-[#2a375e] rounded-full mix-blend-screen filter blur-[150px] opacity-60"></div>
+        <div class="absolute bottom-[10%] right-[10%] w-96 h-96 bg-[#3a3054] rounded-full mix-blend-screen filter blur-[150px] opacity-60"></div>
+        
+        <!-- Generate Stars using JS on load -->
+        <div id="star-container"></div>
+    </div>
+
+    <!-- MAIN HUB CONTAINER (FILE 1 / INDEX.HTML) -->
+    <!-- ========================================================================= -->
+    <!-- Jika kamu memisahkannya, bagian header dan tab ini bisa ditaruh di index.html -->
+    <!-- ========================================================================= -->
+    <div class="relative z-10 w-full max-w-2xl">
+        
+        <!-- Header -->
+        <div class="text-center mb-10 space-y-3">
+            <div class="flex items-center justify-center gap-4">
+                <div class="w-16 h-px bg-gradient-to-r from-transparent to-[#d3bc8e]"></div>
+                <div class="w-3 h-3 rotate-45 border border-[#d3bc8e] flex items-center justify-center">
+                    <div class="w-1 h-1 bg-[#d3bc8e]"></div>
+                </div>
+                <div class="w-16 h-px bg-gradient-to-l from-transparent to-[#d3bc8e]"></div>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-serif text-[#ece5d8] tracking-[0.15em] drop-shadow-[0_0_10px_rgba(211,188,142,0.3)]">
+                AETERNA
+            </h1>
+            <p class="text-[#a3a8b8] text-xs tracking-[0.3em] uppercase">Astral Protocol System</p>
+        </div>
+
+        <!-- The Box -->
+        <div class="bg-[#121626]/90 backdrop-blur-xl border border-[#d3bc8e]/40 rounded-sm shadow-[0_0_40px_rgba(0,0,0,0.8)] relative">
+            
+            <!-- Corner Decors -->
+            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#d3bc8e]"></div>
+            <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#d3bc8e]"></div>
+            <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#d3bc8e]"></div>
+            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#d3bc8e]"></div>
+
+            <!-- Navigation Tabs -->
+            <div class="flex border-b border-[#d3bc8e]/20 p-2 gap-2 bg-[#090e17]/50">
+                <button id="btn-encrypt" onclick="switchTab('encrypt')" class="flex-1 py-3 px-4 font-serif tracking-widest text-sm transition-all duration-300 relative tab-active">
+                    ENKRIPSI
+                </button>
+                <button id="btn-decrypt" onclick="switchTab('decrypt')" class="flex-1 py-3 px-4 font-serif tracking-widest text-sm transition-all duration-300 relative tab-inactive">
+                    DEKRIPSI
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="p-8 md:p-10">
+                
+
+                <!-- ========================================================================= -->
+                <!-- FILE 2: MODUL ENKRIPSI (ENCRYPT.HTML) -->
+                <!-- ========================================================================= -->
+                <div id="module-encrypt" class="space-y-6 block fade-in">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-[#d3bc8e] font-serif text-sm tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-lock text-sm"></i> SEGEL ASTRAL (INPUT)
+                            </span>
+                            <button onclick="clearEncrypt()" class="text-[#a3a8b8] hover:text-[#d3bc8e] transition-colors">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <textarea id="input-encrypt" oninput="processEncrypt()" placeholder="Ketik kata-kata fana di sini..."
+                            class="w-full h-32 bg-[#1c2233]/80 border border-[#d3bc8e]/30 rounded-xl p-5 text-[#ece5d8] focus:outline-none focus:border-[#d3bc8e] transition-colors resize-none backdrop-blur-md shadow-inner"></textarea>
+                    </div>
+
+                    <div class="flex items-center justify-center">
+                        <div class="h-px bg-gradient-to-r from-transparent via-[#d3bc8e]/50 to-transparent w-full"></div>
+                        <div class="mx-4 text-[#d3bc8e]"><i class="fa-solid fa-sparkles text-sm"></i></div>
+                        <div class="h-px bg-gradient-to-r from-transparent via-[#d3bc8e]/50 to-transparent w-full"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-[#d3bc8e] font-serif text-sm tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-moon text-sm"></i> HASIL MANIFESTASI
+                            </span>
+                            <button id="btn-copy-enc" onclick="copyToClipboard('output-encrypt')" class="hidden items-center gap-1 text-xs text-[#ece5d8] bg-[#d3bc8e]/20 px-3 py-1 rounded-full hover:bg-[#d3bc8e]/40 transition-colors border border-[#d3bc8e]/30">
+                                <i class="fa-regular fa-copy"></i> Salin
+                            </button>
+                        </div>
+                        <div id="output-encrypt" class="w-full min-h-[128px] bg-[#121626]/80 border border-[#d3bc8e]/30 rounded-xl p-5 text-[#e6c981] font-serif italic text-lg tracking-wide backdrop-blur-md shadow-[0_0_15px_rgba(211,188,142,0.1)] break-all">
+                            <!-- Hasil enkripsi muncul di sini -->
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- ========================================================================= -->
+                <!-- FILE 3: MODUL DEKRIPSI (DECRYPT.HTML) -->
+                <!-- ========================================================================= -->
+                <div id="module-decrypt" class="space-y-6 hidden fade-in">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-[#d3bc8e] font-serif text-sm tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-unlock text-sm"></i> BUKA SEGEL (INPUT MANTRA)
+                            </span>
+                            <button onclick="clearDecrypt()" class="text-[#a3a8b8] hover:text-[#d3bc8e] transition-colors">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                        <textarea id="input-decrypt" oninput="processDecrypt()" placeholder="Masukkan bahasa Aeterna di sini..."
+                            class="w-full h-32 bg-[#1c2233]/80 border border-[#d3bc8e]/30 rounded-xl p-5 text-[#ece5d8] font-serif italic focus:outline-none focus:border-[#d3bc8e] transition-colors resize-none backdrop-blur-md shadow-inner"></textarea>
+                        
+                        <!-- Pesan Error Validasi -->
+                        <div id="error-decrypt" class="hidden items-center gap-2 text-[#ff5a5a] text-sm mt-2 font-medium bg-[#ff5a5a]/10 p-2 rounded border border-[#ff5a5a]/20">
+                            <i class="fa-solid fa-circle-exclamation"></i> Entitas tak dikenal. Pesan ini bukan dalam bahasa Aeterna.
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center">
+                        <div class="h-px bg-gradient-to-r from-transparent via-[#d3bc8e]/50 to-transparent w-full"></div>
+                        <div class="mx-4 text-[#d3bc8e]"><i class="fa-regular fa-compass animate-spin-slow text-lg"></i></div>
+                        <div class="h-px bg-gradient-to-r from-transparent via-[#d3bc8e]/50 to-transparent w-full"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-1">
+                            <span class="text-[#d3bc8e] font-serif text-sm tracking-widest flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-sm"></i> MAKNA ASLI (OUTPUT)
+                            </span>
+                        </div>
+                        <div id="output-decrypt" class="w-full min-h-[128px] bg-[#121626]/80 border border-[#d3bc8e]/30 rounded-xl p-5 text-[#ece5d8] text-lg tracking-wide backdrop-blur-md shadow-[0_0_15px_rgba(211,188,142,0.1)] break-all">
+                            <!-- Hasil dekripsi muncul di sini -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- LOGIKA JAVASCRIPT UTAMA (Bisa ditaruh di file main.js terpisah nanti) -->
+    <!-- ========================================================================= -->
+    <script>
+        // 1. KAMUS NOX-AETERNA
+        const naxDictionary = {
+            'a': 'vo', 'b': 'mu', 'c': 'py', 'd': 're', 'e': 'xi', 'f': 'ly', 'g': 'ka', 'h': 'zu',
+            'i': 'te', 'j': 'qy', 'k': 'sh', 'l': 'iw', 'm': 'oz', 'n': 'ha', 'o': 'un', 'p': 'bt',
+            'q': 'rv', 'r': 'cy', 's': 'xe', 't': 'za', 'u': 'ny', 'v': 'ku', 'w': 'po', 'x': 'mi',
+            'y': 'de', 'z': 'go'
+        };
+
+        // Buat kamus kebalikannya secara otomatis
+        const reverseNax = {};
+        for (let key in naxDictionary) {
+            reverseNax[naxDictionary[key]] = key;
+        }
+
+        // 2. SISTEM TAB (BERPINDAH MENU)
+        function switchTab(tab) {
+            const btnEnc = document.getElementById('btn-encrypt');
+            const btnDec = document.getElementById('btn-decrypt');
+            const modEnc = document.getElementById('module-encrypt');
+            const modDec = document.getElementById('module-decrypt');
+
+            if (tab === 'encrypt') {
+                btnEnc.className = "flex-1 py-3 px-4 font-serif tracking-widest text-sm transition-all duration-300 relative tab-active";
+                btnDec.className = "flex-1 py-3 px-4 font-serif tracking-widest text-sm transition-all duration-300 relative tab-inactive";
+                modEnc.classList.remove('hidden');
+                modEnc.classList.add('block');
+                modDec.classList.remove('block');
+                modDec.classList.add('hidden');
+            } else {
+                btnDec.className = "flex-1 py-3 px-4 font-serif tracking-widest text-sm transition-all duration-300 relative tab-active";
+                btnEnc.className = "flex-1 py-3 px-4 font-serif tracking-widest text-sm transition-all duration-300 relative tab-inactive";
+                modDec.classList.remove('hidden');
+                modDec.classList.add('block');
+                modEnc.classList.remove('block');
+                modEnc.classList.add('hidden');
+            }
+        }
+
+        // 3. FUNGSI ENKRIPSI
+        function processEncrypt() {
+            const input = document.getElementById('input-encrypt').value;
+            const outputDiv = document.getElementById('output-encrypt');
+            const copyBtn = document.getElementById('btn-copy-enc');
+
+            let result = '';
+            for(let i = 0; i < input.length; i++) {
+                let char = input[i].toLowerCase();
+                if (char === ' ') {
+                    result += ' ';
+                } else if (/[.,!?\n]/.test(char)) {
+                    result += char; // Biarkan tanda baca
+                } else {
+                    result += naxDictionary[char] || char;
+                }
+            }
+
+            outputDiv.innerText = result;
+
+            if(result.trim().length > 0) {
+                copyBtn.style.display = 'flex';
+            } else {
+                copyBtn.style.display = 'none';
+            }
+        }
+
+        function clearEncrypt() {
+            document.getElementById('input-encrypt').value = '';
+            processEncrypt();
+        }
+
+        // 4. FUNGSI VALIDASI BAHASA AETERNA
+        function validateAeterna(text) {
+            if (!text.trim()) return true;
+            let i = 0;
+            const cipher = text.toLowerCase();
+            while (i < cipher.length) {
+                // Lewati spasi dan tanda baca
+                if (cipher[i] === ' ' || /[.,!?\n]/.test(cipher[i])) {
+                    i++;
+                    continue;
+                }
+                
+                // Ambil 2 karakter
+                const pair = cipher.substring(i, i + 2);
+                
+                // Jika ganjil atau tidak ada di kamus kebalikan = ERROR
+                if (pair.length < 2 || !reverseNax[pair]) {
+                    return false; 
+                }
+                i += 2;
+            }
+            return true;
+        }
+
+        // 5. FUNGSI DEKRIPSI
+        function processDecrypt() {
+            const input = document.getElementById('input-decrypt').value;
+            const outputDiv = document.getElementById('output-decrypt');
+            const errorDiv = document.getElementById('error-decrypt');
+            const inputBox = document.getElementById('input-decrypt');
+
+            // Cek jika kosong
+            if (!input.trim()) {
+                outputDiv.innerText = '';
+                errorDiv.style.display = 'none';
+                inputBox.style.borderColor = 'rgba(211,188,142,0.3)';
+                return;
+            }
+
+            // Validasi dulu
+            if (!validateAeterna(input)) {
+                errorDiv.style.display = 'flex';
+                inputBox.style.borderColor = '#ff5a5a';
+                outputDiv.innerText = '';
+                return;
+            }
+
+            // Jika valid, jalankan dekripsi
+            errorDiv.style.display = 'none';
+            inputBox.style.borderColor = '#d3bc8e';
+            let result = '';
+            let i = 0;
+            const cipher = input.toLowerCase();
+            
+            while (i < cipher.length) {
+                if (cipher[i] === ' ' || /[.,!?\n]/.test(cipher[i])) {
+                    result += cipher[i];
+                    i++;
+                } else {
+                    const pair = cipher.substring(i, i + 2);
+                    result += reverseNax[pair];
+                    i += 2;
+                }
+            }
+            outputDiv.innerText = result;
+        }
+
+        function clearDecrypt() {
+            document.getElementById('input-decrypt').value = '';
+            processDecrypt();
+        }
+
+        // 6. FUNGSI SALIN KE CLIPBOARD
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+            
+            // Ubah teks tombol sementara
+            const btn = document.getElementById('btn-copy-enc');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fa-regular fa-copy"></i> Salin';
+            }, 2000);
+        }
+
+        // 7. MEMBUAT BINTANG-BINTANG MALAM SECARA ACAK
+        window.onload = function() {
+            const container = document.getElementById('star-container');
+            for(let i = 0; i < 30; i++) {
+                const star = document.createElement('div');
+                star.className = 'star opacity-40';
+                star.style.width = (Math.random() * 2 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.top = (Math.random() * 100) + '%';
+                star.style.left = (Math.random() * 100) + '%';
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 2) + 's';
+                container.appendChild(star);
+            }
+        }
+    </script>
+</body>
+</html>
